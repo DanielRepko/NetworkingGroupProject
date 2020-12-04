@@ -25,28 +25,6 @@ void handle_get(http_request request)
 	wstring APIuri = request.absolute_uri().to_string();
 	wcout << "endpoint URI: " << APIuri << endl;
 	
-	
-	//playerDied Endpoint
-	if (wcscmp(APIuri.c_str(), L"/SLCGame311/PlayerDied/") == 0)
-	{
-		http_headers reqHeaders = request.headers();
-
-		if (reqHeaders.has(L"UserID"))
-		{
-			json::value JSONObj = json::value::object();
-
-			JSONObj[L"UserID"] = json::value::string(reqHeaders[L"UserID"]);
-
-			request.reply(status_codes::OK, JSONObj);
-		}
-		else
-		{
-			request.reply(status_codes::FailedDependency, "missing headers");
-		}
-		
-	}
-
-	
 
 }
 
@@ -57,6 +35,7 @@ void handle_post(http_request request)
 	wstring APIuri = request.absolute_uri().to_string();
 	wcout << "endpoint URI: " << APIuri << endl;
 
+	//Login endpoint
 	if (wcscmp(APIuri.c_str(), L"/SLCGame311/Login") == 0)
 	{
 		json::value ReqBodyJSON = json::value::object();
