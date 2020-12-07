@@ -18,12 +18,38 @@ using namespace std;
 int g_SessionID = 0;
 map<wstring, int> Session;
 
+int highScore = 0;
+
 void handle_get(http_request request)
 {
 	cout << "\nhandle GET\n";
 
 	wstring APIuri = request.absolute_uri().to_string();
 	wcout << "endpoint URI: " << APIuri << endl;
+
+	//GetHighScore endpoint
+	if (wcscmp(APIuri.c_str(), L"/SLCGame311/GetHighScore") == 0)
+	{
+		json::value JSONObj = json::value::object();
+
+		http_headers reqHeaders = request.headers();
+
+		//checks if client sent neccesary headers
+		if (reqHeaders.has(L"TokenID") && reqHeaders.has(L"Name"))
+		{
+			//check if TokenID in header matches token stored on the server
+			if(reqHeaders[L"TokenID"] == to_wstring(Session[reqHeaders[L"Name"]]))
+			{
+				//return the current high score
+				JSONObj[L"HighScore"] = highScore;
+				request.reply(status_codes::OK, JSONObj);
+			}
+
+			request.reply(status_codes::BadRequest, "Authentication Failed");
+		}
+
+		request.reply(status_codes::FailedDependency, "Missing headers");
+	}
 	
 
 }
@@ -44,22 +70,26 @@ void handle_post(http_request request)
 				ReqBodyJSON = task.get();
 			}).wait();
 
+		int id = NULL;
+
 		if (ReqBodyJSON.has_string_field(L"Name"))
 		{
 			utility::string_t Name = ReqBodyJSON.at(L"Name").as_string();
 			if (Session[Name] != NULL)
 			{
-				Name.append(L", welcome back!");
+				id = Session[Name];
 			}
 			else
 			{
 				g_SessionID++;
+				id = g_SessionID;
 				Session[Name] = g_SessionID;
+			}
 
-				Name.append(L", welcome to the server!. Since this your first time, please see the authentication token attached.");
-			}			
+			json::value JSONObj = json::value::object();
+			JSONObj[L"TokenID"] = id;
 
-			request.reply(status_codes::OK, Name);
+			request.reply(status_codes::OK, JSONObj);
 		}		
 		else
 		{
