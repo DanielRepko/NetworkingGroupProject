@@ -44,22 +44,26 @@ void handle_post(http_request request)
 				ReqBodyJSON = task.get();
 			}).wait();
 
+		int id = NULL;
+
 		if (ReqBodyJSON.has_string_field(L"Name"))
 		{
 			utility::string_t Name = ReqBodyJSON.at(L"Name").as_string();
 			if (Session[Name] != NULL)
 			{
-				Name.append(L", welcome back!");
+				id = Session[Name];
 			}
 			else
 			{
 				g_SessionID++;
+				id = g_SessionID;
 				Session[Name] = g_SessionID;
+			}
 
-				Name.append(L", welcome to the server!. Since this your first time, please see the authentication token attached.");
-			}			
+			json::value JSONObj = json::value::object();
+			JSONObj[L"TokenID"] = id;
 
-			request.reply(status_codes::OK, Name);
+			request.reply(status_codes::OK, JSONObj);
 		}		
 		else
 		{
