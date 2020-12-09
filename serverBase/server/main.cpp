@@ -34,7 +34,7 @@ void handle_get(http_request request)
 
 		http_headers reqHeaders = request.headers();
 
-		//checks if client sent neccesary headers
+		//checks for neccesary headers
 		if (reqHeaders.has(L"TokenID") && reqHeaders.has(L"Name"))
 		{
 			//check if TokenID in header matches token stored on the server
@@ -72,14 +72,17 @@ void handle_post(http_request request)
 
 		int id = NULL;
 
+		//check for required body
 		if (ReqBodyJSON.has_string_field(L"Name"))
 		{
 			utility::string_t Name = ReqBodyJSON.at(L"Name").as_string();
+
+			//new player login
 			if (Session[Name] != NULL)
 			{
 				id = Session[Name];
 			}
-			else
+			else //returning player login
 			{
 				g_SessionID++;
 				id = g_SessionID;
@@ -95,6 +98,51 @@ void handle_post(http_request request)
 		{
 			request.reply(status_codes::ExpectationFailed, "Missing JSON body data");
 		}
+	}
+
+	//SetScore endpoint
+	if (wcscmp(APIuri.c_str(), L"/SLCGame311/SetScore") == 0)
+	{
+		json::value ReqBodyJSON = json::value::object();
+		request.extract_json().then([&ReqBodyJSON](pplx::task<json::value> task)
+		{
+			ReqBodyJSON = task.get();
+		}).wait();
+
+		//check for required body
+		if (ReqBodyJSON.has_integer_field(L"Score"))
+		{
+			http_headers reqHeaders = request.headers();
+
+			utility::string_t Name = ReqBodyJSON.at(L"Name").as_string();
+			int score = ReqBodyJSON.at(L"Score").as_integer();
+
+			json::value JSONObj = json::value::object();
+
+			//check for required headers
+			if (reqHeaders.has(L"TokenID") && reqHeaders.has(L"Name"))
+			{
+				//check if player acheived a new high score
+				if (score > highScore)
+				{
+					highScore = score;
+					JSONObj[L"isHighScore"] = json::value::boolean(true);
+				}
+				else
+				{
+					JSONObj[L"isHighScore"] = json::value::boolean(false);
+				}
+
+				//reply with JSON object notifying player if they got a high score
+				request.reply(status_codes::OK, JSONObj);
+			}
+			request.reply(status_codes::FailedDependency, "Missing headers");
+		}
+		else
+		{
+			request.reply(status_codes::ExpectationFailed, "Missing JSON body data");
+		}
+
 	}
 
 	request.reply(status_codes::BadRequest, "API endpoint not found");
