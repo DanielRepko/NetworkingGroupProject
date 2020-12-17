@@ -133,6 +133,7 @@ public class Game : MonoBehaviour
         player.GetComponent<FirstPersonController>().enabled = false;
         player.GetComponent<CharacterController>().enabled = false;
         gameOverPanel.SetActive(true);
+        StartCoroutine(NetworkManager.Instance.SetScoreRequest("http://localhost:8777/SLCGame311/SetScore", Name, score));
     }
 
     public void RestartGame()
