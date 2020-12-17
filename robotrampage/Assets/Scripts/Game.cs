@@ -133,13 +133,27 @@ public class Game : MonoBehaviour
         player.GetComponent<FirstPersonController>().enabled = false;
         player.GetComponent<CharacterController>().enabled = false;
         gameOverPanel.SetActive(true);
-        StartCoroutine(NetworkManager.Instance.SetScoreRequest("http://localhost:8777/SLCGame311/SetScore", Name, score));
+        gameUI.ShowHighScoreText();
+        StartCoroutine(NetworkManager.Instance.SetScoreRequest("http://localhost:8777/SLCGame311/SetScore", Name, score, UpdateHighScoreText));
+    }
+
+    public void UpdateHighScoreText(bool isHighScore)
+    {
+        if (isHighScore)
+        {
+            gameUI.SetHighScoreText("New HighScore!");
+        }
+        else
+        {
+            //gameUI.SetHighScoreText("So close! The highscore to beat is: " + highscore);
+        }
     }
 
     public void RestartGame()
     {
         SceneManager.LoadScene(Constants.SceneBattle);
         gameOverPanel.SetActive(true);
+        gameUI.HideHighScoreText();
     }
 
     public void Exit()

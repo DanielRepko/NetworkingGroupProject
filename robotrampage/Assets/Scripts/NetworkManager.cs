@@ -61,7 +61,7 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
-    public IEnumerator SetScoreRequest(string uri, string name, int score)
+    public IEnumerator SetScoreRequest(string uri, string name, int score, Action<bool> callback)
     {
         SetScoreRequestData myData = new SetScoreRequestData();
         myData.Score = score;
@@ -92,6 +92,7 @@ public class NetworkManager : MonoBehaviour
             Debug.Log("Response Recieved");
             SetScoreResponseData myJSON = JsonUtility.FromJson<SetScoreResponseData>(req.downloadHandler.text);
             Debug.Log(myJSON.IsHighScore);
+            callback.Invoke(myJSON.IsHighScore);
         }
     }
 

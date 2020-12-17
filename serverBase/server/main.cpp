@@ -130,6 +130,8 @@ void handle_post(http_request request)
 				{
 					JSONObj[L"IsHighScore"] = json::value::boolean(false);
 				}
+
+				cout << highScore << endl;
 				//reply with JSON object notifying player if they got a high score
 				request.reply(status_codes::OK, JSONObj);
 			}
