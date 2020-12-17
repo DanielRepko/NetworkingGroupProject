@@ -22,6 +22,14 @@ public class Game : MonoBehaviour
 
     public GameObject gameOverPanel;
 
+    private string Name = "Jimbo-Bean";
+
+
+    private void Awake()
+    {
+        StartCoroutine(NetworkManager.Instance.LoginRequest("http://localhost:8777/SLCGame311/Login", Name));
+    }
+
     // Start is called before the first frame update
     void Start()
     {
