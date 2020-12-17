@@ -61,6 +61,41 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
+    public IEnumerator SetScoreRequest(string uri, string name, int score, Action<bool> callback)
+    {
+        SetScoreRequestData myData = new SetScoreRequestData();
+        myData.Score = score;
+
+        UnityWebRequest req = new UnityWebRequest(uri);
+        req.method = UnityWebRequest.kHttpVerbPOST;
+        req.downloadHandler = new DownloadHandlerBuffer();
+
+        string myObjectAsJSON = JsonUtility.ToJson(myData);
+        byte[] bytes = Encoding.ASCII.GetBytes(myObjectAsJSON);
+
+        UploadHandlerRaw uH = new UploadHandlerRaw(bytes);
+        req.uploadHandler = uH;
+
+        req.SetRequestHeader("Content-Type", "application/json");
+        req.SetRequestHeader("TokenID", TokenID+"");
+        req.SetRequestHeader("Name", name);
+
+        yield return req.SendWebRequest();
+
+        Debug.Log("Response Code:" + req.responseCode);
+        if (req.isNetworkError)
+        {
+            Debug.LogError("Error: " + req.error);
+        }
+        else
+        {
+            Debug.Log("Response Recieved");
+            SetScoreResponseData myJSON = JsonUtility.FromJson<SetScoreResponseData>(req.downloadHandler.text);
+            Debug.Log(myJSON.IsHighScore);
+            callback.Invoke(myJSON.IsHighScore);
+        }
+    }
+
     private void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
