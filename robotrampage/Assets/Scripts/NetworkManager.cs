@@ -91,8 +91,33 @@ public class NetworkManager : MonoBehaviour
         {
             Debug.Log("Response Recieved");
             SetScoreResponseData myJSON = JsonUtility.FromJson<SetScoreResponseData>(req.downloadHandler.text);
-            Debug.Log(myJSON.IsHighScore);
             callback.Invoke(myJSON.IsHighScore);
+        }
+    }
+
+    public IEnumerator GetHighScoreRequest(string uri, string name)
+    {
+        UnityWebRequest req = new UnityWebRequest(uri);
+        DownloadHandlerBuffer dH = new DownloadHandlerBuffer();
+        req.downloadHandler = dH;
+
+        req.SetRequestHeader("Content-Type", "application/json");
+        req.SetRequestHeader("TokenID", TokenID + "");
+        req.SetRequestHeader("Name", name);
+
+        yield return req.SendWebRequest();
+
+        Debug.Log("Response Code:" + req.responseCode);
+
+        if (req.isNetworkError)
+        {
+            Debug.LogError("Error: " + req.error);
+        }
+        else
+        {
+            Debug.Log("Response Recieved");
+            GetHighScoreResponseData myJSON = JsonUtility.FromJson<GetHighScoreResponseData>(req.downloadHandler.text);
+            Game.instance.SetHighScoreText("So close! The highscore to beat is: " + myJSON.Highscore);
         }
     }
 

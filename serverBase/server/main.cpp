@@ -41,7 +41,7 @@ void handle_get(http_request request)
 			if(reqHeaders[L"TokenID"] == to_wstring(Session[reqHeaders[L"Name"]]))
 			{
 				//return the current high score
-				JSONObj[L"HighScore"] = highScore;
+				JSONObj[L"Highscore"] = highScore;
 				request.reply(status_codes::OK, JSONObj);
 			}
 
@@ -130,8 +130,6 @@ void handle_post(http_request request)
 				{
 					JSONObj[L"IsHighScore"] = json::value::boolean(false);
 				}
-
-				cout << highScore << endl;
 				//reply with JSON object notifying player if they got a high score
 				request.reply(status_codes::OK, JSONObj);
 			}
