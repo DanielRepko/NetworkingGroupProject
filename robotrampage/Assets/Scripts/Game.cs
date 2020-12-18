@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
     // the static instance variable for the singleton
-    private static Game instance;
+    public static Game instance;
 
     [SerializeField]
     RobotSpawn[] spawns;
@@ -23,6 +24,9 @@ public class Game : MonoBehaviour
     public GameObject gameOverPanel;
 
     private string Name = "Jimbo-Bean";
+
+    public Text HighScoreText;
+    public int highscore;
 
 
     private void Awake()
@@ -133,12 +137,27 @@ public class Game : MonoBehaviour
         player.GetComponent<FirstPersonController>().enabled = false;
         player.GetComponent<CharacterController>().enabled = false;
         gameOverPanel.SetActive(true);
+        ShowHighScoreText();
+        StartCoroutine(NetworkManager.Instance.SetScoreRequest("http://localhost:8777/SLCGame311/SetScore", Name, score, UpdateHighScoreText));
+    }
+
+    public void UpdateHighScoreText(bool isHighScore)
+    {
+        if (isHighScore)
+        {
+            SetHighScoreText("New HighScore!");
+        }
+        else
+        {
+            StartCoroutine(NetworkManager.Instance.GetHighScoreRequest("http://localhost:8777/SLCGame311/GetHighScore", Name));
+        }
     }
 
     public void RestartGame()
     {
         SceneManager.LoadScene(Constants.SceneBattle);
         gameOverPanel.SetActive(true);
+        HideHighScoreText();
     }
 
     public void Exit()
@@ -149,5 +168,22 @@ public class Game : MonoBehaviour
     public void MainMenu()
     {
         SceneManager.LoadScene(Constants.SceneMenu);
+    }
+
+    public void SetHighScoreText(string text)
+    {
+        HighScoreText.text = text;
+    }
+
+
+    public void ShowHighScoreText()
+    {
+        HighScoreText.gameObject.SetActive(true);
+    }
+
+    public void HideHighScoreText()
+    {
+
+        HighScoreText.gameObject.SetActive(false);
     }
 }

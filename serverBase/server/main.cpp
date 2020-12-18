@@ -41,7 +41,7 @@ void handle_get(http_request request)
 			if(reqHeaders[L"TokenID"] == to_wstring(Session[reqHeaders[L"Name"]]))
 			{
 				//return the current high score
-				JSONObj[L"HighScore"] = highScore;
+				JSONObj[L"Highscore"] = highScore;
 				request.reply(status_codes::OK, JSONObj);
 			}
 
@@ -113,8 +113,6 @@ void handle_post(http_request request)
 		if (ReqBodyJSON.has_integer_field(L"Score"))
 		{
 			http_headers reqHeaders = request.headers();
-
-			utility::string_t Name = ReqBodyJSON.at(L"Name").as_string();
 			int score = ReqBodyJSON.at(L"Score").as_integer();
 
 			json::value JSONObj = json::value::object();
@@ -126,13 +124,12 @@ void handle_post(http_request request)
 				if (score > highScore)
 				{
 					highScore = score;
-					JSONObj[L"isHighScore"] = json::value::boolean(true);
+					JSONObj[L"IsHighScore"] = json::value::boolean(true);
 				}
 				else
 				{
-					JSONObj[L"isHighScore"] = json::value::boolean(false);
+					JSONObj[L"IsHighScore"] = json::value::boolean(false);
 				}
-
 				//reply with JSON object notifying player if they got a high score
 				request.reply(status_codes::OK, JSONObj);
 			}

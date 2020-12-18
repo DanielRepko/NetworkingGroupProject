@@ -33,7 +33,7 @@ public class GameUI : MonoBehaviour
     [SerializeField]
     private Text waveClearText;
     [SerializeField]
-    private Text newWaveText;
+    private Text newWaveText;    
     [SerializeField]
     Player player;
 
@@ -99,7 +99,7 @@ public class GameUI : MonoBehaviour
     public void SetEnemyText(int enemies)
     {
         enemyText.text = "Enemies: " + enemies;
-    }
+    }    
 
     public void ShowWaveClearBonus()
     {
@@ -138,4 +138,5 @@ public class GameUI : MonoBehaviour
         yield return new WaitForSeconds(4);
         newWaveText.GetComponent<Text>().enabled = false;
     }
+
 }
