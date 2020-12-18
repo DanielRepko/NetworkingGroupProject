@@ -33,9 +33,7 @@ public class GameUI : MonoBehaviour
     [SerializeField]
     private Text waveClearText;
     [SerializeField]
-    private Text newWaveText;
-    [SerializeField]
-    private Text HighScoreText;
+    private Text newWaveText;    
     [SerializeField]
     Player player;
 
@@ -101,12 +99,7 @@ public class GameUI : MonoBehaviour
     public void SetEnemyText(int enemies)
     {
         enemyText.text = "Enemies: " + enemies;
-    }
-
-    public void SetHighScoreText(string text)
-    {
-        HighScoreText.text = text;
-    }
+    }    
 
     public void ShowWaveClearBonus()
     {
@@ -146,14 +139,4 @@ public class GameUI : MonoBehaviour
         newWaveText.GetComponent<Text>().enabled = false;
     }
 
-    public void ShowHighScoreText()
-    {
-        HighScoreText.gameObject.SetActive(true);
-    }
-
-    public void HideHighScoreText()
-    {
-
-        HighScoreText.gameObject.SetActive(false);
-    }
 }
